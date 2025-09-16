@@ -340,10 +340,6 @@ docker-compose exec postgres pg_dump -U postgres vision_analytics > "backup_${DA
 - **Documentación PostgreSQL**: https://www.postgresql.org/docs/
 - **Documentación Docker**: https://docs.docker.com/
 
-### Contacto
-
-Para soporte técnico o reportar problemas, contactar al equipo de desarrollo.
-
 ---
 
 ## 📝 Notas de Versión
