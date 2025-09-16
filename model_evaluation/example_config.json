@@ -1,0 +1,14 @@
+{
+  "source_video_path": "mall_dataset/frames",
+  "model_id": "yolov8s-640",
+  "iou_threshold": 0.5,
+  "confidence_threshold": 0.5,
+  "class_ids": [0],
+  "output_dir": "./output",
+  "description": "Configuración de ejemplo para YOLOv8",
+  "notes": [
+    "Ajusta source_video_path al directorio de tus frames",
+    "Modifica model_id según tu modelo de Roboflow",
+    "Ajusta los umbrales según tus necesidades"
+  ]
+}

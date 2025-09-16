@@ -1,0 +1,248 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{subcaption}
+
+\geometry{margin=2.5cm}
+
+\title{\textbf{Evaluación de Modelo YOLOv8 en Mall Dataset: \\Análisis de Detección de Personas}}
+\author{Análisis de Tiempo en Zonas}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Este documento presenta una evaluación completa del modelo YOLOv8 para la detección de personas en el Mall Dataset. Se implementó un sistema de evaluación basado en métricas de distancia euclidiana para calcular la precisión, recall y F1-score del modelo. Los resultados muestran un rendimiento sólido con una precisión del 93.21\% y un recall del 48.35\%, obteniendo un F1-score de 0.6367.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introducción}
+
+El Mall Dataset es un conjunto de datos ampliamente utilizado para la evaluación de algoritmos de detección y conteo de personas. Este dataset contiene 2000 frames de video con anotaciones precisas de la ubicación de las cabezas de las personas, lo que lo convierte en un benchmark ideal para evaluar modelos de detección de objetos.
+
+\section{Metodología}
+
+\subsection{Dataset}
+
+El Mall Dataset incluye:
+\begin{itemize}
+    \item \textbf{2000 frames} de video de una cámara de vigilancia
+    \item \textbf{Resolución}: 640x480 píxeles
+    \item \textbf{Anotaciones}: Coordenadas (x,y) de las cabezas de las personas
+    \item \textbf{Formato}: Archivo .mat con estructura jerárquica
+\end{itemize}
+
+\subsection{Modelo Evaluado}
+
+Se utilizó el modelo YOLOv8 con las siguientes características:
+\begin{itemize}
+    \item \textbf{Arquitectura}: YOLOv8s (small)
+    \item \textbf{Clases detectadas}: Personas (clase 0)
+    \item \textbf{Threshold de confianza}: 0.5
+    \item \textbf{IoU threshold}: 0.5
+\end{itemize}
+
+\subsection{Técnica de Evaluación}
+
+\subsubsection{Problema del Matching}
+
+Inicialmente se intentó usar Intersection over Union (IoU) para hacer matching entre detecciones y ground truth. Sin embargo, esto presentó problemas fundamentales:
+
+\begin{itemize}
+    \item \textbf{Ground Truth}: Coordenadas de puntos (cabezas de personas)
+    \item \textbf{Detecciones}: Bounding boxes rectangulares
+    \item \textbf{Incompatibilidad}: IoU requiere áreas superpuestas, no puntos
+\end{itemize}
+
+\subsubsection{Solución Implementada: Matching por Distancia}
+
+Se implementó un sistema de matching basado en distancia euclidiana:
+
+\begin{enumerate}
+    \item \textbf{Cálculo del centro}: Para cada detección, se calcula el centro del bounding box
+    \item \textbf{Distancia euclidiana}: Se calcula la distancia entre el centro de la detección y cada punto del ground truth
+    \item \textbf{Threshold de distancia}: Se estableció un umbral de 100 píxeles para considerar un match válido
+    \item \textbf{Algoritmo greedy}: Se asignan matches por distancia ascendente, evitando asignaciones múltiples
+\end{enumerate}
+
+\subsection{Métricas Calculadas}
+
+\subsubsection{Precisión (Precision)}
+\begin{equation}
+Precision = \frac{True\ Positives}{True\ Positives + False\ Positives}
+\end{equation}
+
+\subsubsection{Recall}
+\begin{equation}
+Recall = \frac{True\ Positives}{True\ Positives + False\ Negatives}
+\end{equation}
+
+\subsubsection{F1-Score}
+\begin{equation}
+F1\text{-}Score = 2 \times \frac{Precision \times Recall}{Precision + Recall}
+\end{equation}
+
+\subsubsection{Error Absoluto Promedio}
+\begin{equation}
+Average\ Error = \frac{1}{N_{processed}} \sum_{i=1}^{N_{processed}} |Detected_i - Ground\ Truth_i|
+\end{equation}
+
+donde $N_{processed}$ es el número de frames procesados (101 frames), no el total de frames en el dataset (2000 frames).
+
+\section{Resultados}
+
+\subsection{Métricas Principales}
+
+Los resultados obtenidos en la evaluación del modelo son los siguientes:
+
+\begin{table}[H]
+\centering
+\caption{Métricas de Evaluación del Modelo YOLOv8}
+\begin{tabular}{@{}lc@{}}
+\toprule
+\textbf{Métrica} & \textbf{Valor} \\
+\midrule
+Precisión (Precision) & 93.21\% \\
+Recall & 48.35\% \\
+F1-Score & 0.6367 \\
+Error Absoluto Promedio & 13.7723 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Análisis Detallado}
+
+\subsubsection{Distribución de Errores}
+
+\begin{table}[H]
+\centering
+\caption{Estadísticas de Error por Frame}
+\begin{tabular}{@{}lc@{}}
+\toprule
+\textbf{Estadística} & \textbf{Valor} \\
+\midrule
+Error Promedio por Frame & 13.77 personas \\
+Error Máximo por Frame & 31 personas \\
+Error Mínimo por Frame & 4 personas \\
+Desviación Estándar & 6.1320 \\
+Frames con error > 5 & 98.0\% (99/101) \\
+Frames con error > 10 & 60.4\% (61/101) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Interpretación del Error}: Un error promedio de 13.77 personas por frame indica que el modelo tiene dificultades significativas para contar personas con precisión. Considerando que el dataset contiene entre 4 y 31 personas por frame, este nivel de error representa un desafío considerable para el modelo.
+
+\subsubsection{Conteo de Detecciones}
+
+\begin{table}[H]
+\centering
+\caption{Conteo de Detecciones y Ground Truth}
+\begin{tabular}{@{}lc@{}}
+\toprule
+\textbf{Categoría} & \textbf{Cantidad} \\
+\midrule
+Total Detecciones & 1,248 \\
+True Positives & 1,276 \\
+False Positives & 93 \\
+False Negatives & 1,363 \\
+Total Ground Truth & 2,639 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Interpretación de Resultados}
+
+\subsubsection{Precisión Alta (93.21\%)}
+La alta precisión indica que el modelo es muy conservador y rara vez detecta personas que no existen. Esto es positivo para aplicaciones donde los falsos positivos son costosos.
+
+\subsubsection{Recall Moderado (48.35\%)}
+El recall del 48.35\% indica que el modelo detecta aproximadamente la mitad de las personas reales. Esto sugiere que hay margen de mejora en la sensibilidad del modelo.
+
+\subsubsection{F1-Score Balanceado (0.6367)}
+El F1-Score de 0.6367 indica un balance razonable entre precisión y recall, aunque hay espacio para optimización.
+
+\subsubsection{Distribución de Errores}
+El error promedio de 13.77 personas por frame, combinado con la alta variabilidad (desviación estándar de 6.13), indica que el modelo tiene dificultades significativas para el conteo preciso de personas. Esto puede deberse a:
+\begin{itemize}
+    \item Condiciones de iluminación variables
+    \item Oclusiones entre personas
+    \item Densidad variable de personas en diferentes frames
+    \item Limitaciones del modelo para manejar multitudes densas
+    \item Problemas de calibración en los thresholds de confianza
+\end{itemize}
+
+\section{Discusión}
+
+\subsection{Fortalezas del Modelo}
+
+\begin{itemize}
+    \item \textbf{Alta precisión}: Minimiza falsos positivos
+    \item \textbf{Consistencia}: Rendimiento estable a través de los frames
+    \item \textbf{Eficiencia}: Procesamiento rápido con YOLOv8s
+\end{itemize}
+
+\subsection{Áreas de Mejora}
+
+\begin{itemize}
+    \item \textbf{Sensibilidad}: Aumentar el recall sin comprometer la precisión
+    \item \textbf{Robustez}: Mejorar el rendimiento en condiciones desafiantes
+    \item \textbf{Calibración}: Ajustar thresholds para optimizar el F1-Score
+\end{itemize}
+
+\subsection{Comparación con Métodos Tradicionales}
+
+El enfoque de matching por distancia euclidiana demostró ser más apropiado que IoU para este tipo de dataset donde el ground truth consiste en puntos únicos en lugar de bounding boxes.
+
+\section{Conclusiones}
+
+La evaluación del modelo YOLOv8 en el Mall Dataset revela un rendimiento mixto. Aunque la precisión del 93.21\% es excelente, el recall del 48.35\% y el error promedio de 13.77 personas por frame indican desafíos significativos en el conteo preciso de personas.
+
+La técnica de matching por distancia euclidiana demostró ser efectiva para este tipo de evaluación, proporcionando métricas más precisas que los métodos tradicionales basados en IoU.
+
+\subsection{Recomendaciones Futuras}
+
+\begin{enumerate}
+    \item \textbf{Optimización de hiperparámetros}: Experimentar con diferentes thresholds de confianza e IoU
+    \item \textbf{Data augmentation}: Implementar técnicas de aumento de datos para mejorar la robustez
+    \item \textbf{Ensemble methods}: Combinar múltiples modelos para mejorar el recall
+    \item \textbf{Fine-tuning}: Entrenar el modelo específicamente en datos similares al Mall Dataset
+\end{enumerate}
+
+\section{Apéndices}
+
+\subsection{Apéndice A: Código de Evaluación}
+
+El código implementado utiliza las siguientes librerías principales:
+\begin{itemize}
+    \item \texttt{supervision}: Para manejo de detecciones
+    \item \texttt{inference}: Para ejecutar el modelo YOLOv8
+    \item \texttt{opencv-python}: Para procesamiento de imágenes
+    \item \texttt{numpy}: Para cálculos numéricos
+    \item \texttt{scipy}: Para cargar archivos .mat
+\end{itemize}
+
+\subsection{Apéndice B: Estructura del Dataset}
+
+El archivo \texttt{mall\_gt.mat} contiene:
+\begin{itemize}
+    \item \texttt{frame}: Array de 2000 elementos, cada uno contiene las coordenadas de personas
+    \item \texttt{count}: Array de conteos por frame
+    \item Estructura jerárquica: \texttt{frame[0][i][0][0][0]} contiene las coordenadas del frame i
+\end{itemize}
+
+\end{document}

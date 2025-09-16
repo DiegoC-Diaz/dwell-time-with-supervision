@@ -1,0 +1,16 @@
+# Dependencias para la CLI de YOLOv8
+# Instalar con: pip install -r requirements.txt
+
+# Librería principal para CLI
+click>=8.0.0
+
+# Dependencias existentes del proyecto
+supervision>=0.16.0
+inference>=0.9.0
+opencv-python>=4.8.0
+numpy>=1.24.0
+scipy>=1.10.0
+
+# Dependencias adicionales para mejor experiencia CLI
+rich>=13.0.0  # Para output más bonito (opcional)
+typer>=0.9.0  # Alternativa a click (opcional)

@@ -1,0 +1,32 @@
+\babel@toc {spanish}{}\relax 
+\contentsline {section}{\numberline {1}Introducción}{2}{section.1}%
+\contentsline {section}{\numberline {2}Metodología}{2}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Dataset}{2}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Modelo Evaluado}{2}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Técnica de Evaluación}{3}{subsection.2.3}%
+\contentsline {subsubsection}{\numberline {2.3.1}Problema del Matching}{3}{subsubsection.2.3.1}%
+\contentsline {subsubsection}{\numberline {2.3.2}Solución Implementada: Matching por Distancia}{3}{subsubsection.2.3.2}%
+\contentsline {subsection}{\numberline {2.4}Métricas Calculadas}{3}{subsection.2.4}%
+\contentsline {subsubsection}{\numberline {2.4.1}Precisión (Precision)}{3}{subsubsection.2.4.1}%
+\contentsline {subsubsection}{\numberline {2.4.2}Recall}{3}{subsubsection.2.4.2}%
+\contentsline {subsubsection}{\numberline {2.4.3}F1-Score}{3}{subsubsection.2.4.3}%
+\contentsline {subsubsection}{\numberline {2.4.4}Error Absoluto Promedio}{3}{subsubsection.2.4.4}%
+\contentsline {section}{\numberline {3}Resultados}{4}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Métricas Principales}{4}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Análisis Detallado}{4}{subsection.3.2}%
+\contentsline {subsubsection}{\numberline {3.2.1}Distribución de Errores}{4}{subsubsection.3.2.1}%
+\contentsline {subsubsection}{\numberline {3.2.2}Conteo de Detecciones}{4}{subsubsection.3.2.2}%
+\contentsline {subsection}{\numberline {3.3}Interpretación de Resultados}{5}{subsection.3.3}%
+\contentsline {subsubsection}{\numberline {3.3.1}Precisión Alta (93.21\%)}{5}{subsubsection.3.3.1}%
+\contentsline {subsubsection}{\numberline {3.3.2}Recall Moderado (48.35\%)}{5}{subsubsection.3.3.2}%
+\contentsline {subsubsection}{\numberline {3.3.3}F1-Score Balanceado (0.6367)}{5}{subsubsection.3.3.3}%
+\contentsline {subsubsection}{\numberline {3.3.4}Distribución de Errores}{5}{subsubsection.3.3.4}%
+\contentsline {section}{\numberline {4}Discusión}{5}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Fortalezas del Modelo}{5}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Áreas de Mejora}{5}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Comparación con Métodos Tradicionales}{6}{subsection.4.3}%
+\contentsline {section}{\numberline {5}Conclusiones}{6}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Recomendaciones Futuras}{6}{subsection.5.1}%
+\contentsline {section}{\numberline {6}Apéndices}{6}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Apéndice A: Código de Evaluación}{6}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Apéndice B: Estructura del Dataset}{6}{subsection.6.2}%
