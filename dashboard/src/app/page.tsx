@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Calendar, Eye, RefreshCw, AlertCircle, Settings } from 'lucide-react';
 import { PrimaryMetricCards } from '@/components/PrimaryMetricCards';
 import { ZoneFilterDropdown } from '@/components/ZoneFilterDropdown';
-import { useDashboardData, transformToDashboardMetrics } from '@/lib/metricsHooks';
+import { useDashboardData, transformToDashboardMetrics, useMaxTimePerPerson } from '@/lib/metricsHooks';
 
 
 export default function Dashboard() {
@@ -13,6 +13,7 @@ export default function Dashboard() {
   const [selectedZoneName, setSelectedZoneName] = useState<string | undefined>(undefined);
   
   const { data, loading, error, refreshData } = useDashboardData("daily", selectedDate, selectedZoneId);
+  const { data: maxTimeData, loading: maxTimeLoading, error: maxTimeError, refreshData: refreshMaxTimeData } = useMaxTimePerPerson(selectedDate, selectedDate, selectedZoneId);
 
   // Obtener el nombre de la zona seleccionada
   useEffect(() => {
@@ -89,11 +90,14 @@ export default function Dashboard() {
               
               {/* Botón de refresh */}
               <button
-                onClick={refreshData}
-                disabled={loading}
+                onClick={() => {
+                  refreshData();
+                  refreshMaxTimeData();
+                }}
+                disabled={loading || maxTimeLoading}
                 className="flex items-center space-x-2 px-3 py-1 text-sm font-medium text-gray-600 hover:text-gray-900 disabled:opacity-50"
               >
-                <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`h-4 w-4 ${(loading || maxTimeLoading) ? 'animate-spin' : ''}`} />
                 <span>Actualizar</span>
               </button>
             </div>
@@ -104,7 +108,7 @@ export default function Dashboard() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Indicador de carga */}
-        {loading && (
+        {(loading || maxTimeLoading) && (
           <div className="flex justify-center items-center py-12">
             <div className="flex items-center space-x-3">
               <RefreshCw className="h-6 w-6 animate-spin text-blue-600" />
@@ -114,15 +118,18 @@ export default function Dashboard() {
         )}
 
         {/* Mensaje de error */}
-        {error && !loading && (
+        {(error || maxTimeError) && !loading && !maxTimeLoading && (
           <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
             <div className="flex items-center space-x-2">
               <AlertCircle className="h-5 w-5 text-amber-600" />
               <span className="text-amber-800 font-medium">Conexión con API fallida</span>
             </div>
-            <p className="text-amber-700 mt-1">Mostrando datos de ejemplo. Error: {error}</p>
+            <p className="text-amber-700 mt-1">Mostrando datos de ejemplo. Error: {error || maxTimeError}</p>
             <button
-              onClick={refreshData}
+              onClick={() => {
+                refreshData();
+                refreshMaxTimeData();
+              }}
               className="mt-2 text-amber-600 hover:text-amber-800 text-sm font-medium"
             >
               Intentar reconectar
@@ -131,12 +138,16 @@ export default function Dashboard() {
         )}
 
         {/* Contenido principal */}
-        {!loading && data && dashboardMetrics && (
+        {!loading && !maxTimeLoading && data && dashboardMetrics && (
           <div className="mb-8">
             <h2 className="text-xl font-semibold text-gray-900 mb-6">
               Métricas Principales
             </h2>
-            <PrimaryMetricCards metrics={dashboardMetrics} selectedZoneName={selectedZoneName} />
+            <PrimaryMetricCards 
+              metrics={dashboardMetrics} 
+              maxTimeData={maxTimeData}
+              selectedZoneName={selectedZoneName} 
+            />
           </div>
         )}
       </main>

@@ -1,5 +1,5 @@
-import { Users, Clock, TrendingUp } from 'lucide-react';
-import { DashboardMetrics } from '@/types/metrics';
+import { Users, Clock, TrendingUp, Timer } from 'lucide-react';
+import { DashboardMetrics, MaxTimePerPersonData } from '@/types/metrics';
 
 interface MetricCardProps {
   title: string;
@@ -43,12 +43,13 @@ function MetricCard({ title, value, icon, subtitle, color = 'blue' }: MetricCard
 
 interface PrimaryMetricCardsProps {
   metrics: DashboardMetrics;
+  maxTimeData?: MaxTimePerPersonData | null;
   selectedZoneName?: string;
 }
 
-export function PrimaryMetricCards({ metrics, selectedZoneName }: PrimaryMetricCardsProps) {
+export function PrimaryMetricCards({ metrics, maxTimeData, selectedZoneName }: PrimaryMetricCardsProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       <MetricCard
         title="Visitantes Totales"
         value={metrics.totalVisitors.toLocaleString()}
@@ -69,6 +70,16 @@ export function PrimaryMetricCards({ metrics, selectedZoneName }: PrimaryMetricC
         icon={<Clock className="h-6 w-6" />}
         subtitle={selectedZoneName ? `Por visitante en ${selectedZoneName}` : "Por visitante"}
         color="purple"
+      />
+      <MetricCard
+        title="Tiempo Máximo"
+        value={maxTimeData ? `${maxTimeData.duration_minutes} min` : "N/A"}
+        icon={<Timer className="h-6 w-6" />}
+        subtitle={maxTimeData ? 
+          `Zona ${maxTimeData.zone_id} - ${new Date(maxTimeData.start_time).toLocaleTimeString()}` : 
+          "Sin datos"
+        }
+        color="orange"
       />
     </div>
   );

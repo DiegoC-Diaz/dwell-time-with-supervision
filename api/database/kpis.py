@@ -52,7 +52,7 @@ def AverageTime(start_date_time, end_date_time):
             result = cursor.fetchone()
             
             if result and result[0] is not None:
-                return float(result[0])
+                return round(float(result[0]), 2)
             else:
                 return None
     except Exception as e:
@@ -203,7 +203,7 @@ def AverageTimePerZone(start_date_time, end_date_time, zone):
             result = cursor.fetchone()
             
             if result and result[0] is not None:
-                return float(result[0])
+                return round(float(result[0]), 2)
             else:
                 return None
     except Exception as e:
@@ -245,6 +245,110 @@ def TotalVisitorsPerZone(start_date_time, end_date_time,zone):
                 return None
     except Exception as e:
         print(f"❌ Error en TotalVisitors: {e}")
+        return None
+    finally:
+        connection.close()
+
+def MaxTimePerZone(start_date_time, end_date_time, zone):
+    """
+    Calcula el tiempo máximo de detección por zona en un rango de fechas
+    """
+    detections=getDetectionRegistriesPerZone(start_date_time, end_date_time, zone)
+    if not detections:
+        return []
+    max_time=max(detections, key=lambda x: x["time_s"])
+    return max_time
+def MaxTime(start_date_time, end_date_time):
+    """
+    Calcula el tiempo máximo de detección en un rango de fechas
+    """
+    detections=getDetectionRegistries(start_date_time, end_date_time)
+    if not detections:
+        return []
+    max_time=max(detections, key=lambda x: x["time_s"])
+    return max_time
+
+def MaxTimePerPerson(start_date_time, end_date_time):
+    """
+    Calcula el tiempo máximo que una persona estuvo en cualquier zona en un rango de fechas
+    
+    Args:
+        start_date_time (str): Fecha y hora de inicio
+        end_date_time (str): Fecha y hora de fin
+    
+    Returns:
+        dict: Diccionario con el tiempo máximo y detalles de la detección
+    """
+    connection = get_db_connection()
+    if not connection:
+        return None
+    
+    try:
+        with connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cursor:
+            query = """
+                SELECT * FROM public.detection_times 
+                WHERE start_time >= %s AND end_time <= %s
+                ORDER BY time_s DESC
+                LIMIT 1;
+            """
+            cursor.execute(query, (start_date_time, end_date_time))
+            result = cursor.fetchone()
+            
+            if result:
+                return {
+                    "max_time_s": result['time_s'],
+                    "zone_id": result['zone_id'],
+                    "start_time": result['start_time'],
+                    "end_time": result['end_time'],
+                    "duration_minutes": round(result['time_s'] / 60, 2)
+                }
+            else:
+                return None
+    except Exception as e:
+        print(f"❌ Error en MaxTimePerPerson: {e}")
+        return None
+    finally:
+        connection.close()
+
+def MaxTimePerPersonPerZone(start_date_time, end_date_time, zone):
+    """
+    Calcula el tiempo máximo que una persona estuvo en una zona específica en un rango de fechas
+    
+    Args:
+        start_date_time (str): Fecha y hora de inicio
+        end_date_time (str): Fecha y hora de fin
+        zone (int): ID de la zona
+    
+    Returns:
+        dict: Diccionario con el tiempo máximo y detalles de la detección
+    """
+    connection = get_db_connection()
+    if not connection:
+        return None
+    
+    try:
+        with connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cursor:
+            query = """
+                SELECT * FROM public.detection_times 
+                WHERE start_time >= %s AND end_time <= %s AND zone_id = %s
+                ORDER BY time_s DESC
+                LIMIT 1;
+            """
+            cursor.execute(query, (start_date_time, end_date_time, zone))
+            result = cursor.fetchone()
+            
+            if result:
+                return {
+                    "max_time_s": result['time_s'],
+                    "zone_id": result['zone_id'],
+                    "start_time": result['start_time'],
+                    "end_time": result['end_time'],
+                    "duration_minutes": round(result['time_s'] / 60, 2)
+                }
+            else:
+                return None
+    except Exception as e:
+        print(f"❌ Error en MaxTimePerPersonPerZone: {e}")
         return None
     finally:
         connection.close()

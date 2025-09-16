@@ -14,7 +14,7 @@ import random
 import sys
 import threading
 import numpy as np
-from database.kpis import AverageTime, TotalVisitors, AverageTimePerZone, TotalVisitorsPerZone, PeakHour, PeakHourPerZone
+from database.kpis import AverageTime, TotalVisitors, AverageTimePerZone, TotalVisitorsPerZone, PeakHour, PeakHourPerZone, MaxTimePerPerson, MaxTimePerPersonPerZone
 from database.detections import InsertDetectionTime, InsertMultipleDetectionTimes
 from database.zones import GetZones, GetZoneById, InsertZone, UpdateZone, DeleteZone, CheckZoneNameExists
 from database.processes import GetProcesses, GetProcessById, InsertProcess, UpdateProcess, DeleteProcess, GetProcessesByZone
@@ -263,6 +263,53 @@ async def get_dashboard_data(viewMode: str = "daily", date: Optional[str] = None
     response = DashboardResponse(daily=[daily_kpi])
 
     return response
+
+
+@app.get("/api/metrics/max-time-per-person")
+async def get_max_time_per_person(start_date: Optional[str] = None, end_date: Optional[str] = None, zone_id: Optional[int] = None):
+    """
+    Obtiene el tiempo máximo que una persona estuvo en una zona o en general
+    
+    Args:
+        start_date: Fecha de inicio (formato: 'YYYY-MM-DD')
+        end_date: Fecha de fin (formato: 'YYYY-MM-DD')
+        zone_id: ID de la zona para filtrar (opcional)
+    """
+    try:
+        # Usar fechas por defecto si no se proporcionan
+        if not start_date:
+            start_date = datetime.now().strftime("%Y-%m-%d")
+        if not end_date:
+            end_date = datetime.now().strftime("%Y-%m-%d")
+        
+        start_datetime = f"{start_date} 00:00:00"
+        end_datetime = f"{end_date} 23:59:59"
+        
+        # Obtener métrica según si se especifica zona o no
+        if zone_id:
+            max_time_data = MaxTimePerPersonPerZone(start_datetime, end_datetime, zone_id)
+        else:
+            max_time_data = MaxTimePerPerson(start_datetime, end_datetime)
+        
+        if max_time_data:
+            return {
+                "success": True,
+                "message": "Métrica obtenida exitosamente",
+                "data": max_time_data
+            }
+        else:
+            return {
+                "success": True,
+                "message": "No se encontraron datos para el rango de fechas especificado",
+                "data": None
+            }
+            
+    except Exception as e:
+        print(f"Error inesperado en get_max_time_per_person: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error interno del servidor: {str(e)}"
+        )
 
 
 @app.post("/api/detection-times", response_model=DetectionTimeResponse)

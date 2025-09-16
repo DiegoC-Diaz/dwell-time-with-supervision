@@ -229,32 +229,6 @@ export default function Settings() {
                 </div>
               </div>
 
-              {/* Información de Desarrollo */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-                <div className="flex items-center mb-6">
-                  <div className="p-3 bg-green-100 rounded-lg mr-4">
-                    <Info className="h-6 w-6 text-green-600" />
-                  </div>
-                  <div>
-                    <h2 className="text-xl font-semibold text-gray-900">Estado del Sistema</h2>
-                    <p className="text-sm text-gray-600">Todas las funcionalidades principales están operativas</p>
-                  </div>
-                </div>
-
-                <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-                  <h3 className="text-lg font-medium text-green-800 mb-3">Sistema Completamente Funcional</h3>
-                  <p className="text-sm text-green-700 mb-4">
-                    El dashboard de Vision Analytics está completamente operativo con todas las funcionalidades principales implementadas:
-                  </p>
-                  <ul className="text-sm text-green-700 space-y-2">
-                    <li>• ✅ Configuración de zonas de análisis</li>
-                    <li>• ✅ Procesamiento de videos por zona</li>
-                    <li>• ✅ Métricas detalladas por zona</li>
-                    <li>• ✅ Gestión completa de zonas</li>
-                    <li>• ✅ Dashboard con filtros por zona</li>
-                  </ul>
-                </div>
-              </div>
             </>
           )}
 
