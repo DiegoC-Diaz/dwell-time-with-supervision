@@ -379,3 +379,4 @@ dist/
 # Project specific
 api/inference_engine/yolo*.pt
 api/yolo*.pt
+model/evaluation/mall_dataset/*
